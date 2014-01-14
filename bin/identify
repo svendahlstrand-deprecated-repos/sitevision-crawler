@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+
+var request = require('request');
+var cheerio = require('cheerio');
+
+var isSiteVision = function (body) {
+  var $ = cheerio.load(body);
+  return $('link[href^="/sitevision"]').length > 0;
+};
+
+var siteVisionVersion = function (body) {
+  var $ = cheerio.load(body);
+  var href = $('link[href^="/sitevision"]').eq(0).attr('href');
+  var match = href.match(/sitevision\/([\d\.-]+)/);
+  return match ? match[1] : '2.X';
+};
+
+process.argv.slice(2).forEach(function(val, index, array) {
+  var options = {
+      url: val,
+      headers: {
+          'User-Agent': 'curl/7.30.0'
+      }
+  };
+
+  request(options, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      if (isSiteVision(body)) {
+        console.log(val + ' (' + siteVisionVersion(body) + ')');
+      }
+    }
+    else {
+      console.error(val + '\n' + error);
+    }
+  });
+});
