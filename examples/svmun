@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
 cd "${BASH_SOURCE%/*}" || exit
-cat data/municipalities.txt | xargs ../bin/identify
+<data/municipalities.txt xargs ../bin/identify
